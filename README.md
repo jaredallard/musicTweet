@@ -4,6 +4,11 @@ Updates your Twitter name to include whatever song you're listening to on
 Spotify. Also, for some reason, includes as full page web app displaying
 that information as well
 
+
+![twitter]()
+
+![ui]()
+
 **Note** This was a quick project, probably won't ever be dependable.
 The codebase is pretty crap too.
 
