@@ -110,16 +110,42 @@ body {
 }
 
 
-@media (max-width: 200px) {
+@media screen and (max-width: 480px) {
   .media-container {
     margin-left: 10px;
   }
+  .album-art img {
+    height: 150px;
+  }
+
   .player {
+    display: inline-block;
     width: 140px;
+  }
+
+  .song-info .name {
+    font-size: 1.5em;
   }
 }
 
-@media (max-width: 800px) {
+@media (min-width: 480px) and (max-width: 880px) {
+  .media-container {
+    margin-left: 10px;
+  }
+  .album-art img {
+    height: 170px;
+  }
+
+  .player {
+    width: 200px;
+  }
+
+  .song-info .name {
+    font-size: 1.2em;
+  }
+}
+
+@media (min-width: 880px) and (max-width: 1000px) {
   .album-art img {
     height: 200px;
   }
@@ -129,13 +155,8 @@ body {
   }
 
   .player {
+    display: block;
     margin-top: 80px;
     width: 200px;
-  }
-}
-
-@media (max-width: 1000px) {
-  .media-container {
-    margin-left: 40px;
   }
 }
