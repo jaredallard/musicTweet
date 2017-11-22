@@ -5,11 +5,16 @@ Spotify. Also, for some reason, includes as full page web app displaying
 that information as well
 
 
+**Twitter Name + Bio**
+
 ![twitter](https://github.com/jaredallard/musicTweet/blob/master/.github/twitter.png?raw=true)
+
+
+**Full Page**
 
 ![ui](https://raw.githubusercontent.com/jaredallard/musicTweet/79310c41fe7ddac7367fb72aab34301d60e55721/.github/ui.png)
 
-**Note** This was a quick project, probably won't ever be dependable.
+**Note**: This was a quick project, probably won't ever be dependable.
 The codebase is pretty crap too.
 
 ## Setup
