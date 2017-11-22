@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Now Playing</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/index.css" />
+  </head>
+  <body>
+
+    <div class='content'></div>
+    <div class='hint'>&nbsp;</div>
+
+    <div class='media-container'>
+      <div class='media-inner'>
+
+        <div class='album-art'>
+          <img id='art' src="https://i.scdn.co/image/5e03bd60821c2a8ab7dc28731325bc525f068730">
+        </div>
+
+        <div class='song-info'>
+          <div class='name'>loading</div>
+          <div class='artist'></div>
+
+          <div class='player'>
+            <div class="progress">
+              <div class="progress-bar" style="width:0%"></div>
+            </div>
+            <div class='remaining-wrapper'
+              <span class='remaining-opr'>-</span><div class="remaining">0:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js" integrity="sha256-DYyWoZ81AkDpPAJcZqoKFkhTnt5EV74MlgFi8yEr0lc=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      var time     = null;
+      var oldTimer = null;
+      function simulateTime() {
+        var at  = time.at;
+        var dur = time.max;
+
+        if(at > dur) at = dur; // don't go over.
+
+        var per = (at / dur) * 100
+
+
+        var left      = dur - at
+        var tempTime  = moment.duration(left);
+        var secs      = tempTime.seconds()
+
+        if(secs < 10 && secs.length !== 2) {
+          secs = "0" + secs
+        }
+
+        var formatted = tempTime.minutes() + ':' + secs
+        // console.log('progress', at, dur, per, formatted, left)
+
+        $('.remaining').text(formatted)
+        $('.progress-bar').width(per+'%')
+
+        // NOT ACCURATE MUCH
+        time.at = time.at + 1000; // up by one second
+      }
+
+
+      var num = getRandomInt(1, 45)
+      $('.content').css('background', 'url("../bg/'+num+'.jpg") no-repeat center center fixed')
+      $('.content').css('background-size', 'cover')
+
+      // song tracking
+      var music = new WebSocket("ws://127.0.0.1:8080", "protocolOne");
+      music.onmessage = function(event) {
+        var music = null;
+        try {
+          music = JSON.parse(event.data)
+        } catch(e) {
+          throw new Error('Invalid Websocket response.')
+        }
+
+        console.log('event', music)
+
+        if(!music.sync) {
+          $('.name').text(music.name)
+          $('.artist').text(music.artist)
+          $('#art').attr('src', music.album_image.url)
+
+          time = music.time;
+        } else {
+          time.at = music.time.at
+        }
+
+        if(oldTimer) clearInterval(oldTimer)
+        oldTimer = setInterval(simulateTime, 1000)
+      }
+    </script>
+  </body>
+</html>
