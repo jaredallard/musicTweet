@@ -108,3 +108,34 @@ body {
   font-size: 1.3em;
   margin-top: 10px;
 }
+
+
+@media (max-width: 200px) {
+  .media-container {
+    margin-left: 10px;
+  }
+  .player {
+    width: 140px;
+  }
+}
+
+@media (max-width: 800px) {
+  .album-art img {
+    height: 200px;
+  }
+
+  .media-container {
+    margin-left: 20px;
+  }
+
+  .player {
+    margin-top: 80px;
+    width: 200px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .media-container {
+    margin-left: 40px;
+  }
+}
