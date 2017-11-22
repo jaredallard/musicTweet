@@ -45,7 +45,10 @@ const poll = async (spotify, event) => {
     const url      = playing.body.item.external_urls.spotify
     const time_at  = playing.body.progress_ms
     const time_max = playing.body.item.duration_ms
+    const is_playing = playing.body.is_playing
+
     const status   = {
+      is_playing: is_playing,
       name: name,
       artist: artist,
       url: url,
@@ -70,13 +73,14 @@ const poll = async (spotify, event) => {
     // emit time sync
     event.emit('sync', {
       sync: true,
+      is_playing: is_playing,
       time: {
         at: status.time.at
       }
     })
 
     last = status
-  }, 4000)
+  }, 2000)
 }
 
 module.exports = async (config, event) => {

@@ -21,7 +21,7 @@
       <div class='media-inner'>
 
         <div class='album-art'>
-          <img id='art' src="https://i.scdn.co/image/5e03bd60821c2a8ab7dc28731325bc525f068730">
+          <img id='art' src="#">
         </div>
 
         <div class='song-info'>
@@ -32,7 +32,7 @@
             <div class="progress">
               <div class="progress-bar" style="width:0%"></div>
             </div>
-            <div class='remaining-wrapper'
+            <div class='remaining-wrapper'>
               <span class='remaining-opr'>-</span><div class="remaining">0:00</div>
             </div>
           </div>
@@ -105,6 +105,14 @@
         }
 
         if(oldTimer) clearInterval(oldTimer)
+
+        if(music.is_playing === false) {
+          $('.remaining-opr').html('')
+          $('.remaining').text('Paused')
+
+          return
+        }
+
         oldTimer = setInterval(simulateTime, 1000)
       }
     </script>
