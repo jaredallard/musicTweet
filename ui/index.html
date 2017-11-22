@@ -58,12 +58,10 @@
         var now = oldTimer.msToTime(ms).replace(/\.\d\d\d/g, '');
         // console.log('progress', at, dur, per, formatted, left)
 
-        var per = (time.at / ms) * 100
+        var per = 100 - (ms / time.max) * 100
 
         $('.remaining').text(now)
         $('.progress-bar').width(per+'%')
-
-        // NOT ACCURATE MUCH
       }
 
 
