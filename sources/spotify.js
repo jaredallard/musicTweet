@@ -40,6 +40,7 @@ const poll = async (spotify, event) => {
 
     if(!playing.body) return // skip empty playing
 
+    const as_of    = Date.now()
     const name     = playing.body.item.name;
     const artist   = playing.body.item.album.artists[0].name
     const url      = playing.body.item.external_urls.spotify
@@ -56,6 +57,9 @@ const poll = async (spotify, event) => {
       time: {
         at: time_at,
         max: time_max
+      },
+      event: {
+        received: as_of
       }
     }
 

@@ -43,6 +43,7 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js" integrity="sha256-DYyWoZ81AkDpPAJcZqoKFkhTnt5EV74MlgFi8yEr0lc=" crossorigin="anonymous"></script>
+    <script src="js/timer.js"></script>
     <script type="text/javascript">
       function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -51,31 +52,18 @@
       var time      = null;
       var oldTimer  = null;
       var oldStatus = true
+
       function simulateTime() {
-        var at  = time.at;
-        var dur = time.max;
-
-        if(at > dur) at = dur; // don't go over.
-
-        var per = (at / dur) * 100
-
-
-        var left      = dur - at
-        var tempTime  = moment.duration(left);
-        var secs      = tempTime.seconds()
-
-        if(secs < 10 && secs.length !== 2) {
-          secs = "0" + secs
-        }
-
-        var formatted = tempTime.minutes() + ':' + secs
+        var ms  = oldTimer.lap()
+        var now = oldTimer.msToTime(ms).replace(/\.\d\d\d/g, '');
         // console.log('progress', at, dur, per, formatted, left)
 
-        $('.remaining').text(formatted)
+        var per = (time.at / ms) * 100
+
+        $('.remaining').text(now)
         $('.progress-bar').width(per+'%')
 
         // NOT ACCURATE MUCH
-        time.at = time.at + 1000; // up by one second
       }
 
 
@@ -103,8 +91,6 @@
           time = music.time;
         }
 
-        if(oldTimer) clearInterval(oldTimer)
-
         // reset for pausing only
         if(!oldStatus) {
           oldStatus = true;
@@ -115,10 +101,39 @@
           $('.remaining-opr').html('')
           $('.remaining').text('Paused')
           oldStatus = false;
+          if(oldTimer) oldTimer.stop()
           return
         }
 
-        oldTimer = setInterval(simulateTime, 940)
+        var parseTime = Date.now()
+        if(!music.sync) { // account for parse time
+          var diff = parseTime - music.event.received
+          time.at = time.at + diff;
+
+          console.log('skew', diff)
+        }
+
+        if(music.sync) return; // skip
+        if(oldTimer) oldTimer.stop()
+        console.log('start new timer')
+
+        oldTimer = new Tock({
+          countdown: true,
+          interval: 1000,
+          callback: simulateTime,
+        })
+
+        var left = time.max - time.at
+        var dur  = moment.duration(left)
+        var min  = dur.minutes()
+        var sec  = dur.seconds()
+
+        if(min < 10) min = '0' + min
+        if(sec < 10) sec = '0' + sec
+
+        var init = '00:'+min+':'+sec
+        console.log('init timer', init, left)
+        oldTimer.start('00:'+min+':'+sec)
       }
     </script>
   </body>
