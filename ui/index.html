@@ -66,7 +66,7 @@
 
 
       var num = getRandomInt(1, 45)
-      $('.content').css('background', 'url("../bg/'+num+'.jpg") no-repeat center center fixed')
+      $('.content').css('background', 'url("bg/'+num+'.jpg") no-repeat center center fixed')
       $('.content').css('background-size', 'cover')
 
       // song tracking
@@ -88,19 +88,19 @@
 
           time = music.time;
         }
-
-        // reset for pausing only
-        if(!oldStatus) {
-          oldStatus = true;
-          time.at = music.time.at
-        }
-
         if(music.is_playing === false) {
           $('.remaining-opr').html('')
           $('.remaining').text('Paused')
           oldStatus = false;
           if(oldTimer) oldTimer.stop()
           return
+        }
+
+        // reset for pausing only
+        if(music.sync && oldStatus) return; // skip
+        if(!oldStatus && music.is_playing) {
+          oldStatus = true;
+          time.at = music.time.at
         }
 
         var parseTime = Date.now()
@@ -111,7 +111,6 @@
           console.log('skew', diff)
         }
 
-        if(music.sync) return; // skip
         if(oldTimer) oldTimer.stop()
         console.log('start new timer')
 
