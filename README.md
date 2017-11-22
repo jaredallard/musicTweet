@@ -5,9 +5,9 @@ Spotify. Also, for some reason, includes as full page web app displaying
 that information as well
 
 
-![twitter]()
+![twitter](https://github.com/jaredallard/musicTweet/blob/master/.github/twitter.png?raw=true)
 
-![ui]()
+![ui](https://raw.githubusercontent.com/jaredallard/musicTweet/79310c41fe7ddac7367fb72aab34301d60e55721/.github/ui.png)
 
 **Note** This was a quick project, probably won't ever be dependable.
 The codebase is pretty crap too.
