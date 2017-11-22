@@ -48,8 +48,9 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
       }
 
-      var time     = null;
-      var oldTimer = null;
+      var time      = null;
+      var oldTimer  = null;
+      var oldStatus = true
       function simulateTime() {
         var at  = time.at;
         var dur = time.max;
@@ -100,16 +101,20 @@
           $('#art').attr('src', music.album_image.url)
 
           time = music.time;
-        } else {
-          time.at = music.time.at
         }
 
         if(oldTimer) clearInterval(oldTimer)
 
+        // reset for pausing only
+        if(!oldStatus) {
+          oldStatus = true;
+          time.at = music.time.at
+        }
+
         if(music.is_playing === false) {
           $('.remaining-opr').html('')
           $('.remaining').text('Paused')
-
+          oldStatus = false;
           return
         }
 
