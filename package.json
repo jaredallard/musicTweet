@@ -7,13 +7,12 @@
   "author": "jaredallard@outlook.com>",
   "license": "MIT",
   "dependencies": {
-    "bufferutil": "^3.0.3",
-    "debug": "^3.1.0",
-    "express": "^4.16.2",
-    "fs-extra": "^4.0.2",
-    "spotify-web-api-node": "^2.5.0",
-    "twit": "^2.2.9",
-    "utf-8-validate": "^3.0.4",
-    "ws": "^3.3.2"
+    "async": "^3.1.0",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "fs-extra": "^8.1.0",
+    "spotify-web-api-node": "^4.0.0",
+    "twit": "^2.2.11",
+    "ws": "^7.0.1"
   }
 }

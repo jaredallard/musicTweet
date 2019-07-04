@@ -8,8 +8,11 @@
 const debug   = require('debug')('musictweet:spotify')
 const Spotify = require('spotify-web-api-node')
 const fs      = require('fs-extra')
+const path    = require('path')
 
 let last      = {}
+
+const CREDS_JSON = path.join(__dirname, '../creds.json')
 
 const refresher = async spotify => {
   return setInterval(async () => {
@@ -20,7 +23,7 @@ const refresher = async spotify => {
       spotify.setAccessToken(result.body.access_token)
 
       const creds  = require('../creds.json')
-      fs.writeFile('./creds.json', JSON.stringify({
+      fs.writeFile(CREDS_JSON, JSON.stringify({
         access_token: result.body.access_token,
         refresh_token: creds.refresh_token
       }, 0, 2), 'utf8')
@@ -29,8 +32,6 @@ const refresher = async spotify => {
     }
     debug('auth', 'refreshed token')
   }, 40000)
-
-  debug('auth', 'setup auth refresh timer')
 }
 
 const poll = async (spotify, event) => {
@@ -96,6 +97,10 @@ module.exports = async (config, event) => {
     spotify.setAccessToken(auth.access_token)
     spotify.setRefreshToken(auth.refresh_token)
 
+    // refresh it
+    const refreshed = await spotify.refreshAccessToken()
+    spotify.setAccessToken(refreshed.body.access_token)
+
     const me = await spotify.getMe() // test it
     debug('me', me.body)
   } catch(e) {
@@ -105,16 +110,20 @@ module.exports = async (config, event) => {
         spotify.createAuthorizeURL(['user-read-recently-played', 'user-read-playback-state'], '1'))
 
       process.exit(1)
+    } else if (!await fs.exists(CREDS_JSON)) {
+      debug('doing authcodegrant', config.spotify.code)
+      const result = await spotify.authorizationCodeGrant(config.spotify.code)
+      debug('setting access tokens')
+      spotify.setAccessToken(result.body.access_token)
+      spotify.setRefreshToken(result.body.refresh_token)
+  
+      fs.writeFile(CREDS_JSON, JSON.stringify({
+        access_token: result.body.access_token,
+        refresh_token: result.body.refresh_token
+      }, 0, 2), 'utf8')
+    } else {
+      process.exit(1)
     }
-
-    const result = await spotify.authorizationCodeGrant(config.spotify.code)
-    spotify.setAccessToken(result.body.access_token)
-    spotify.setRefreshToken(result.body.refresh_token)
-
-    fs.writeFile('./creds.json', JSON.stringify({
-      access_token: result.body.access_token,
-      refresh_token: result.body.refresh_token
-    }, 0, 2), 'utf8')
   }
 
   // setup refresher

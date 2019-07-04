@@ -70,7 +70,7 @@
       $('.content').css('background-size', 'cover')
 
       // song tracking
-      var music = new WebSocket("wss://tritonjs.com:8100", "protocolOne");
+      var music = new WebSocket("ws://devd.io:8080");
       music.onmessage = function(event) {
         var music = null;
         try {
