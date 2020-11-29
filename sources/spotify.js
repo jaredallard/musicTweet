@@ -12,7 +12,7 @@ const path = require('path')
 
 let last = {}
 
-const CREDS_JSON = path.join(__dirname, '../creds.json')
+const CREDS_JSON = path.join(__dirname, '../config/creds.json')
 
 const refresher = async spotify => {
   return setInterval(async () => {
@@ -22,7 +22,7 @@ const refresher = async spotify => {
       const result = await spotify.refreshAccessToken()
       spotify.setAccessToken(result.body.access_token)
 
-      const creds = require('../creds.json')
+      const creds = require('../config/creds.json')
       fs.writeFile(CREDS_JSON, JSON.stringify({
         access_token: result.body.access_token,
         refresh_token: creds.refresh_token
@@ -101,7 +101,7 @@ module.exports = async (config, event) => {
 
   // set access token
   try {
-    const auth = require('../creds.json')
+    const auth = require('../config/creds.json')
     spotify.setAccessToken(auth.access_token)
     spotify.setRefreshToken(auth.refresh_token)
 

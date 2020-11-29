@@ -83,7 +83,7 @@
     $('.content').css('background-size', 'cover')
 
     // song tracking
-    var music = new WebSocket("ws://music.jaredallard.me");
+    var music = new WebSocket("wss://music-tweet.jaredallard.me");
     music.onmessage = function (event) {
       var music = null;
       try {

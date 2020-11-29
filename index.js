@@ -44,7 +44,7 @@ status.on('changed', async song => {
   }
 
   if (formatted.length > 50) {
-    formatted = formatted.substring(0, 47) + "..."
+    return console.error("name is too long :(")
   }
 
   await T.post('account/update_profile', update)
