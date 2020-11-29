@@ -5,12 +5,12 @@
  * @license MIT
  * @version 1
  */
-const debug   = require('debug')('musictweet:spotify')
+const debug = require('debug')('musictweet:spotify')
 const Spotify = require('spotify-web-api-node')
-const fs      = require('fs-extra')
-const path    = require('path')
+const fs = require('fs-extra')
+const path = require('path')
 
-let last      = {}
+let last = {}
 
 const CREDS_JSON = path.join(__dirname, '../creds.json')
 
@@ -22,34 +22,40 @@ const refresher = async spotify => {
       const result = await spotify.refreshAccessToken()
       spotify.setAccessToken(result.body.access_token)
 
-      const creds  = require('../creds.json')
+      const creds = require('../creds.json')
       fs.writeFile(CREDS_JSON, JSON.stringify({
         access_token: result.body.access_token,
         refresh_token: creds.refresh_token
       }, 0, 2), 'utf8')
-    } catch(e) {
+    } catch (e) {
       throw new Error('Failed to refresh access token.')
     }
     debug('auth', 'refreshed token')
   }, 40000)
 }
 
+/**
+ * Poll watches for new song events
+ * @param {Spotify} spotify 
+ * @param {*} event 
+ */
 const poll = async (spotify, event) => {
 
   setInterval(async () => {
     const playing = await spotify.getMyCurrentPlayingTrack()
 
-    if(!playing.body) return // skip empty playing
+    if (!playing.body) return // skip empty playing
+    if (!playing.body.item) return // skip empty items
 
-    const as_of    = Date.now()
-    const name     = playing.body.item.name;
-    const artist   = playing.body.item.album.artists[0].name
-    const url      = playing.body.item.external_urls.spotify
-    const time_at  = playing.body.progress_ms
+    const as_of = Date.now()
+    const name = playing.body.item.name;
+    const artist = playing.body.item.album.artists[0].name
+    const url = playing.body.item.external_urls.spotify
+    const time_at = playing.body.progress_ms
     const time_max = playing.body.item.duration_ms
     const is_playing = playing.body.is_playing
 
-    const status   = {
+    const status = {
       is_playing: is_playing,
       name: name,
       artist: artist,
@@ -69,9 +75,9 @@ const poll = async (spotify, event) => {
     //debug('now_playing', status)
 
     // trigger event
-    if(last.name !== name) {
+    if (last.name !== name) {
       event.emit('changed', status)
-    } else if(time_at < last.time) { // check time
+    } else if (time_at < last.time) { // check time
       event.emit('changed', status)
     }
 
@@ -91,6 +97,8 @@ const poll = async (spotify, event) => {
 module.exports = async (config, event) => {
   const spotify = new Spotify(config.spotify)
 
+  spotify.setRedirectURI(config.spotify.redirect_uri)
+
   // set access token
   try {
     const auth = require('../creds.json')
@@ -103,9 +111,9 @@ module.exports = async (config, event) => {
 
     const me = await spotify.getMe() // test it
     debug('me', me.body)
-  } catch(e) {
+  } catch (e) {
     debug('err', e)
-    if(!config.spotify.code) {
+    if (!config.spotify.code) {
       console.log('Please visit this URL and install as spotify#code in config',
         spotify.createAuthorizeURL(['user-read-recently-played', 'user-read-playback-state'], '1'))
 
@@ -116,7 +124,7 @@ module.exports = async (config, event) => {
       debug('setting access tokens')
       spotify.setAccessToken(result.body.access_token)
       spotify.setRefreshToken(result.body.refresh_token)
-  
+
       fs.writeFile(CREDS_JSON, JSON.stringify({
         access_token: result.body.access_token,
         refresh_token: result.body.refresh_token
@@ -132,7 +140,7 @@ module.exports = async (config, event) => {
   await poll(spotify, event)
 
   return {
-    getInfo: function() {
+    getInfo: function () {
       return last
     }
   }

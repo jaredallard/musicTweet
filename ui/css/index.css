@@ -3,7 +3,7 @@ body {
   height: 100%;
   width: 100%;
 
-  overlow: hidden;
+  overflow: hidden;
 
   -webkit-font-smoothing: antialiased;
 }
@@ -20,8 +20,21 @@ body {
   -o-background-size: cover;
   background-size: cover;
 
+  transition: opacity .8s ease-out;
+
   transform: scale(1.03);
-  filter: blur(8px);
+  filter: blur(4px);
+}
+
+#canv {
+  z-index: 1;
+  position: fixed;
+  left:  0;
+  right: 0;
+  top:   0;
+  bottom: 0;
+  background: transparent;
+  filter: blur(1px);
 }
 
 /**
@@ -34,19 +47,20 @@ body {
   top:   0;
   bottom: 0;
 
-  webkit-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000;
+  perspective: 1000;
   -webkit-transform: translate3d(0,0,0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-  perspective: 1000;
   transform: translate3d(0,0,0);
   transform: translateZ(0);
 
   background-color: black;
-  opacity: 0.5;
-}
+  opacity: 0.4;
 
+  z-index: 3;
+}
 
 .media-container {
   z-index: 10;
@@ -71,6 +85,10 @@ body {
 .album-art img {
   height: 320px;
   width: auto;
+
+  -webkit-box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.75);
 }
 
 .song-info {
@@ -90,11 +108,20 @@ body {
 .player {
   width: 400px;
   margin-top: 180px;
+  
 }
 
 .player .progress {
-  height: 2px;
+  height: 5px;
   background-color: grey;
+
+  -webkit-box-shadow: 0px 0px 1px 0.5px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 1px 0.5px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 1px 0.5px rgba(0,0,0,0.75);
+}
+
+.player .progress audio {
+  width:100%
 }
 
 .player .progress .progress-bar {
@@ -109,6 +136,22 @@ body {
   margin-top: 10px;
 }
 
+
+.spotify {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.spotify p {
+  text-shadow: #b2b2b2;
+  color: #fff;
+}
+
+.spotify p a {
+  color: cyan;
+}
 
 @media screen and (max-width: 480px) {
   .media-container {

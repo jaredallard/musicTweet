@@ -1,137 +1,151 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Now Playing</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="icon" href="//www.scdn.co/i/_global/favicon.png">
+<head>
+  <title>Now Playing</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/index.css" />
-  </head>
-  <body>
+  <link rel="icon" href="//www.scdn.co/i/_global/favicon.png">
 
-    <div class='content'></div>
-    <div class='hint'>&nbsp;</div>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/index.css" />
+</head>
 
-    <div class='media-container'>
-      <div class='media-inner'>
+<body>
 
-        <div class='album-art'>
-          <img id='art' src="#">
-        </div>
+  <div class='content'></div>
+  <div class='hint'>&nbsp;</div>
 
-        <div class='song-info'>
-          <div class='name'>loading</div>
-          <div class='artist'></div>
+  <canvas id='canv'></canvas>
 
-          <div class='player'>
-            <div class="progress">
-              <div class="progress-bar" style="width:0%"></div>
-            </div>
-            <div class='remaining-wrapper'>
-              <span class='remaining-opr'>-</span><div class="remaining">0:00</div>
-            </div>
+  <div class='media-container'>
+    <div class='media-inner'>
+
+      <div class='album-art'>
+        <img id='art' src="#">
+      </div>
+
+      <div class='song-info'>
+        <div class='name'>loading</div>
+        <div class='artist'></div>
+
+        <div class='player'>
+          <div class="progress">
+            <div class="progress-bar" style="width:0%"></div>
+          </div>
+          <div class='remaining-wrapper'>
+            <span class='remaining-opr'>-</span>
+            <div class="remaining">0:00</div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js" integrity="sha256-DYyWoZ81AkDpPAJcZqoKFkhTnt5EV74MlgFi8yEr0lc=" crossorigin="anonymous"></script>
-    <script src="js/timer.js"></script>
-    <script type="text/javascript">
-      function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+    integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+    crossorigin="anonymous"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/snow.js"></script>
+  <script type="text/javascript">
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    var time = null;
+    var oldTimer = null;
+    var oldStatus = true
+
+    function simulateTime() {
+      var ms = oldTimer.lap()
+      var now = oldTimer.msToTime(ms).replace(/\.\d\d\d/g, '');
+      // console.log('progress', at, dur, per, formatted, left)
+
+      var per = 100 - (ms / time.max) * 100
+
+      $('.remaining').text(now)
+      $('.progress-bar').width(per + '%')
+    }
+
+
+    var num = getRandomInt(1, 9)
+    $('.content').css('background', 'url("bg/' + num + '.jpg") no-repeat center center fixed')
+    $('.content').css('background-size', 'cover')
+
+    // song tracking
+    var music = new WebSocket("ws://devd.io:8080");
+    music.onmessage = function (event) {
+      var music = null;
+      try {
+        music = JSON.parse(event.data)
+      } catch (e) {
+        throw new Error('Invalid Websocket response.')
       }
 
-      var time      = null;
-      var oldTimer  = null;
-      var oldStatus = true
+      console.log('event', music)
 
-      function simulateTime() {
-        var ms  = oldTimer.lap()
-        var now = oldTimer.msToTime(ms).replace(/\.\d\d\d/g, '');
-        // console.log('progress', at, dur, per, formatted, left)
+      if (!music.sync) {
+        $('.name').text(music.name)
+        $('.artist').text(music.artist)
+        $('#art').attr('src', music.album_image.url)
 
-        var per = 100 - (ms / time.max) * 100
-
-        $('.remaining').text(now)
-        $('.progress-bar').width(per+'%')
+        time = music.time;
+      }
+      if (music.is_playing === false) {
+        $('.remaining-opr').html('')
+        $('.remaining').text('Paused')
+        oldStatus = false;
+        if (oldTimer) oldTimer.stop()
+        return
       }
 
-
-      var num = getRandomInt(1, 45)
-      $('.content').css('background', 'url("bg/'+num+'.jpg") no-repeat center center fixed')
-      $('.content').css('background-size', 'cover')
-
-      // song tracking
-      var music = new WebSocket("ws://devd.io:8080");
-      music.onmessage = function(event) {
-        var music = null;
-        try {
-          music = JSON.parse(event.data)
-        } catch(e) {
-          throw new Error('Invalid Websocket response.')
-        }
-
-        console.log('event', music)
-
-        if(!music.sync) {
-          $('.name').text(music.name)
-          $('.artist').text(music.artist)
-          $('#art').attr('src', music.album_image.url)
-
-          time = music.time;
-        }
-        if(music.is_playing === false) {
-          $('.remaining-opr').html('')
-          $('.remaining').text('Paused')
-          oldStatus = false;
-          if(oldTimer) oldTimer.stop()
-          return
-        }
-
-        // reset for pausing only
-        if(music.sync && oldStatus) return; // skip
-        if(!oldStatus && music.is_playing) {
-          oldStatus = true;
-          time.at = music.time.at
-        }
-
-        var parseTime = Date.now()
-        if(!music.sync) { // account for parse time
-          var diff = parseTime - music.event.received
-          time.at = time.at + diff;
-
-          console.log('skew', diff)
-        }
-
-        if(oldTimer) oldTimer.stop()
-        console.log('start new timer')
-
-        oldTimer = new Tock({
-          countdown: true,
-          interval: 1000,
-          callback: simulateTime,
-        })
-
-        var left = time.max - time.at
-        var dur  = moment.duration(left)
-        var min  = dur.minutes()
-        var sec  = dur.seconds()
-
-        if(min < 10) min = '0' + min
-        if(sec < 10) sec = '0' + sec
-
-        var init = '00:'+min+':'+sec
-        console.log('init timer', init, left)
-        oldTimer.start('00:'+min+':'+sec)
+      // reset for pausing only
+      if (music.sync && oldStatus) return; // skip
+      if (!oldStatus && music.is_playing) {
+        oldStatus = true;
+        time.at = music.time.at
       }
-    </script>
-  </body>
+
+      var parseTime = Date.now()
+      if (!music.sync) { // account for parse time
+        var diff = parseTime - music.event.received
+        time.at = time.at + diff;
+
+        console.log('skew', diff)
+      }
+
+      if (oldTimer) oldTimer.stop()
+      console.log('start new timer')
+
+      oldTimer = new Tock({
+        countdown: true,
+        interval: 1000,
+        callback: simulateTime,
+      })
+
+      var left = time.max - time.at
+      var dur = moment.duration(left)
+      var min = dur.minutes()
+      var sec = dur.seconds()
+
+      if (min < 10) min = '0' + min
+      if (sec < 10) sec = '0' + sec
+
+      var init = '00:' + min + ':' + sec
+      console.log('init timer', init, left)
+      oldTimer.start('00:' + min + ':' + sec)
+    }
+  </script>
+</body>
+
 </html>

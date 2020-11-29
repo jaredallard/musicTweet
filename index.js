@@ -6,16 +6,16 @@
  * @license MIT
  */
 
-const debug  = require('debug')('musictweet')
-const Twit   = require('twit')
+const debug = require('debug')('musictweet')
+const Twit = require('twit')
 const events = require('events')
 
 const config = require('./config/config.json')
 
 // modules / Twitter
 const source = require('./sources/spotify.js')
-const web    = require('./lib/web.js')
-const T      = new Twit(config.twitter)
+const web = require('./lib/web.js')
+const T = new Twit(config.twitter)
 
 const status = new events.EventEmitter
 
@@ -24,7 +24,7 @@ process.on('unhandledRejection', reason => {
 });
 
 status.on('changed', async song => {
-  const formatted = config.template
+  let formatted = config.template
     .replace('{{song}}', song.name)
     .replace('{{artist}}', song.artist)
     .replace('{{url}}', song.url)
@@ -34,7 +34,7 @@ status.on('changed', async song => {
     name: formatted
   }
 
-  if(config.bio_template) {
+  if (config.bio_template) {
     const bio = config.bio_template
       .replace('{{song}}', song.name)
       .replace('{{artist}}', song.artist)
@@ -43,7 +43,9 @@ status.on('changed', async song => {
     update.description = bio
   }
 
-  if(formatted.length > 50) return console.log('name is too long :(')
+  if (formatted.length > 50) {
+    formatted = formatted.substring(0, 47) + "..."
+  }
 
   await T.post('account/update_profile', update)
 })
