@@ -3,3 +3,4 @@ config/config.json
 config/creds.json
 .DS_Store
 now_playing.debug.json
+.yarn
