@@ -16,7 +16,7 @@
     "fs-extra": "^11.2.0",
     "spotify-web-api-node": "^5.0.2",
     "twit": "^2.2.11",
-    "ws": "^8.14.2"
+    "ws": "^8.17.1"
   },
   "packageManager": "yarn@4.0.2"
 }
