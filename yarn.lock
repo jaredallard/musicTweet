@@ -225,15 +225,6 @@ __metadata:
   linkType: hard
 
 "debug@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "debug@npm:4.1.1"
-  dependencies:
-    ms: "npm:^2.1.1"
-  checksum: 399e98c779ba4e71537497f10caf6390646b69330ff8a455427acce04f1ce8d8cd018e1804fdcca772177666fdcd888dd3672bb8f9986c1d785a6c2b9805f370
-  languageName: node
-  linkType: hard
-
-"debug@npm:^4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -766,7 +757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.2, ms@npm:^2.1.1":
+"ms@npm:2.1.2":
   version: 2.1.2
   resolution: "ms@npm:2.1.2"
   checksum: a437714e2f90dbf881b5191d35a6db792efbca5badf112f87b9e1c712aace4b4b9b742dd6537f3edf90fd6f684de897cec230abde57e87883766712ddda297cc
@@ -785,7 +776,6 @@ __metadata:
   resolution: "musictwitter@workspace:."
   dependencies:
     async: "npm:^3.2.5"
-    debug: "npm:^4.3.4"
     express: "npm:^4.19.2"
     fs-extra: "npm:^11.2.0"
     spotify-web-api-node: "npm:^5.0.2"
